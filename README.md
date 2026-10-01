@@ -7,9 +7,11 @@
 ## 구성
 
 ```
-skills/pipeline/   dev-pipeline(오케스트레이터) interview spec plan test-design implement verify
-agents/           backend-dev frontend-dev test-dev e2e-dev
-scripts/          validate.sh (릴리스 전 검증)
+.claude-plugin/marketplace.json   마켓플레이스 (seongho, diagram-design)
+dev-pipeline/                     플러그인 seongho
+  skills/   dev-pipeline(오케스트레이터) interview spec plan test-design implement verify
+  agents/   backend-dev frontend-dev test-dev e2e-dev
+scripts/validate.sh               릴리스 전 검증
 ```
 
 | 스킬 | 역할 |

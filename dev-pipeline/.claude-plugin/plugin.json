@@ -14,14 +14,5 @@
     "tdd",
     "verification",
     "multi-agent"
-  ],
-  "skills": [
-    "./skills/pipeline/dev-pipeline",
-    "./skills/pipeline/interview",
-    "./skills/pipeline/spec",
-    "./skills/pipeline/plan",
-    "./skills/pipeline/test-design",
-    "./skills/pipeline/implement",
-    "./skills/pipeline/verify"
   ]
 }
