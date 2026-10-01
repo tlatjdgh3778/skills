@@ -1,0 +1,26 @@
+{
+  "name": "seongho",
+  "version": "0.1.0",
+  "description": "기능 개발 수명주기(인터뷰, 스펙, 계획, 테스트 설계, 구현, 적대적 검증, 부검)를 오케스트레이션하는 스킬과 에이전트 모음.",
+  "author": {
+    "name": "Seongho"
+  },
+  "homepage": "https://github.com/tlatjdgh3778/skills",
+  "repository": "https://github.com/tlatjdgh3778/skills",
+  "keywords": [
+    "workflow",
+    "spec",
+    "tdd",
+    "verification",
+    "multi-agent"
+  ],
+  "skills": [
+    "./skills/pipeline/dev-pipeline",
+    "./skills/pipeline/interview",
+    "./skills/pipeline/spec",
+    "./skills/pipeline/plan",
+    "./skills/pipeline/test-design",
+    "./skills/pipeline/implement",
+    "./skills/pipeline/verify"
+  ]
+}

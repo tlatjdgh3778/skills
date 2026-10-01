@@ -15,7 +15,7 @@
 <assets/work-order-template.md 형식의 지시서를 번호 순서로 나열>
 
 ## 테스트 설계 증거
-<`/test-design`이 채운다. 그 전에는 "미실시">
+<`test-design` 스킬이 채운다. 그 전에는 "미실시">
 - 상태: <PASS | 미실시 | 건너뜀(사유)>
 - 기준 스펙: <스펙 경로>
 - 골자 digest: <check-skeleton.py가 출력한 값>

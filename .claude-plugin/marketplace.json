@@ -1,0 +1,26 @@
+{
+  "name": "seongho-skills",
+  "owner": {
+    "name": "Seongho"
+  },
+  "metadata": {
+    "description": "Seongho의 개발 파이프라인 스킬과 참고용 외부 플러그인 모음."
+  },
+  "plugins": [
+    {
+      "name": "seongho",
+      "source": "./",
+      "description": "기능 개발 수명주기를 오케스트레이션하는 스킬과 에이전트 모음.",
+      "category": "development"
+    },
+    {
+      "name": "diagram-design",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/cathrynlavery/diagram-design.git"
+      },
+      "description": "편집 디자인 스타일의 HTML/SVG 다이어그램 생성 (cathrynlavery/diagram-design, MIT).",
+      "category": "design"
+    }
+  ]
+}

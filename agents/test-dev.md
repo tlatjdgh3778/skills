@@ -25,7 +25,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 ## 먼저 확인할 것
 
 0. **모드.** 부모가 알려 준 모드를 따른다. 없으면 시작하지 않고 `BLOCKED`로 반환한다.
-   - **골격 모드** (테스트 설계 단계): 구현 전에 골격만 쓴다. 부모가 준 [골격 계약](../skills/test-design/references/skeleton-contract.md)을 읽고 따른다.
+   - **골격 모드** (테스트 설계 단계): 구현 전에 골격만 쓴다. 부모가 준 [골격 계약](../skills/pipeline/test-design/references/skeleton-contract.md)을 읽고 따른다.
    - **살 모드** (구현 단계): 동결된 골격 파일의 본문을 채운다.
 1. 부모가 전달한 **테스트 지시서 전문**과 **스펙 경로**. 둘 중 하나라도 없으면 시작하지 않고 `BLOCKED`로 반환한다.
 2. 지시서에 적힌 것: 완료 조건 → 테스트 종류 → 데이터 표, **mock 허용 경계**, **데이터 격리 방법**, 테스트 실행 명령.

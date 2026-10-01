@@ -91,7 +91,7 @@ def main():
         print(f"스펙을 읽을 수 없음: {e}", file=sys.stderr)
         return 2
     if not ids:
-        print("스펙에서 DoD-N/EC-N 항목을 찾지 못했다. /spec의 ID 규칙을 확인한다", file=sys.stderr)
+        print("스펙에서 DoD-N/EC-N 항목을 찾지 못했다. spec 스킬의 ID 규칙을 확인한다", file=sys.stderr)
         return 2
 
     errors, blocks = [], []
