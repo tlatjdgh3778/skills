@@ -77,6 +77,20 @@ def main(path):
         if "검증" not in l:
             errors.append(f"[3. 완료의 정의] 검증 방법(`검증:`)이 없다: {l.strip()[:60]}")
 
+    # 항목 ID: 완료의 정의는 DoD-N, 엣지 케이스는 EC-N. 중복 금지(테스트 골격이 이 ID로 항목을 잇는다)
+    for name, prefix in (("3. 완료의 정의", "DoD"), ("5. 엣지 케이스와 실패 시나리오", "EC")):
+        seen = set()
+        for l in body[name]:
+            if not bullet(l):
+                continue
+            m = re.match(r"\s*[-*] (%s-\d+): " % prefix, l)
+            if not m:
+                errors.append(f"[{name}] 항목이 `{prefix}-N: ` ID로 시작하지 않는다: {l.strip()[:60]}")
+            elif m.group(1) in seen:
+                errors.append(f"[{name}] ID 중복: {m.group(1)}")
+            else:
+                seen.add(m.group(1))
+
     # 템플릿 placeholder 잔존
     for i, l in enumerate(lines, 1):
         if re.search(r"<[^<>\n]{1,40}>", l) and not l.startswith("```"):
