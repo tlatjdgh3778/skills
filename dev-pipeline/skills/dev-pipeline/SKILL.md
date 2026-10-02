@@ -47,8 +47,8 @@ disable-model-invocation: true
 - Skill 도구로 `seongho:spec`을 호출해 결산을 다섯 장기 구조의 스펙으로 굳힌다. 저장 경로는 `spec` 스킬이 정하며, 이후 단계에는 그 경로를 인자로 넘긴다.
 - 스펙에 `미결정 사항`이 남으면 4단계로 가지 말고 2단계로 돌아간다.
 
-## 4단계: 계획과 지시서
-- Skill 도구로 `seongho:plan`을 스펙 경로 인자와 함께 호출한다. 산출은 사이드별 지시서와 의존 순서가 담긴 계획 파일이며, 사용자 승인 후 5단계(테스트 설계)로 간다. 지시서를 어느 에이전트에 맡길지는 5·6단계에서 정한다.
+## 4단계: 계획 (Task)
+- Skill 도구로 `seongho:plan`을 스펙 경로 인자와 함께 호출한다. 산출은 사이드별 Task와 의존 순서, 항목 coverage가 담긴 계획 파일 하나이며, 사용자 승인 후 5단계(테스트 설계)로 간다. 에이전트에게 줄 지시서는 저장하지 않고, 어느 에이전트에 맡길지와 작업 지시 조립은 5·6단계가 위임할 때 정한다.
 
 ## 5단계: 테스트 설계 (골격 동결)
 - Skill 도구로 `seongho:test-design`을 계획 파일 경로 인자와 함께 호출한다. 스펙의 `DoD-N`·`EC-N` 항목을 구현 전에 테스트 골격(describe/it 조건 서술, 본문은 given/when/then 주석)으로 고정한다. 골격은 `test-dev`/`e2e-dev`가 골격 모드로 작성하고, 기계 검사와 새 `general-purpose` reviewer의 적대적 검토를 거친다.
@@ -58,8 +58,8 @@ disable-model-invocation: true
 
 ## 6단계: 구현 (멀티 에이전트)
 - 시작할 때 스펙의 `상태`를 `구현중`으로 갱신한다.
-- Skill 도구로 `seongho:implement`를 계획 파일 경로 인자와 함께 호출한다. 지시서를 에이전트에 위임하며, 독립 지시서는 **한 메시지의 여러 Agent 호출로 병렬**, 의존이 있으면 순차로 진행한다.
-- 테스트 지시서(`test-dev`, `e2e-dev`)는 이 단계에서 동결된 골격의 **본문(살)만** 채운다. 골자는 바꾸지 못하고, 작성만 하고 실행하지 않는다. 의존 순서는 계획 파일을 따른다(예: 화면이 있어야 E2E의 살을 채울 수 있다).
+- Skill 도구로 `seongho:implement`를 계획 파일 경로 인자와 함께 호출한다. Task를 작업 지시로 조립해 에이전트에 위임하며, 독립 Task는 **한 메시지의 여러 Agent 호출로 병렬**, 의존이 있으면 순차로 진행한다.
+- 테스트 Task(`test-dev`, `e2e-dev`)는 이 단계에서 동결된 골격의 **본문(살)만** 채운다. 골자는 바꾸지 못하고, 작성만 하고 실행하지 않는다. 의존 순서는 계획 파일을 따른다(예: 화면이 있어야 E2E의 살을 채울 수 있다).
 - 끝나면 취합 결과(담당 에이전트, 수정 파일, 자체 검사, 골자 동결 확인, 달라진 점)를 확인하고 7단계로 간다.
 
 ## 7단계: 검증 (적대적 검증자)
@@ -82,7 +82,7 @@ disable-model-invocation: true
 
 ## 요약 플로우
 ```
-요청 → (병렬 Explore) → interview → spec(DoD-N·EC-N) → plan(지시서)
+요청 → (병렬 Explore) → interview → spec(DoD-N·EC-N) → plan(Task)
     → test-design [test-dev · e2e-dev 골격 작성 → 기계 검사 → 새 reviewer → mock 경계 사람 확정 → 골격 동결]
     → implement [backend-dev → frontend-dev | test-dev · e2e-dev 본문 채우기(작성 전용)]
     → 새 general-purpose + verify (적대적 검증 + 골격 동결 확인 + 테스트 실행)  ←── 실패 시 원 구현 에이전트로 루프

@@ -22,6 +22,7 @@ scripts/validate.sh                 릴리스 전 검증
 - **스킬과 에이전트는 프로젝트 지식을 갖지 않는다.** 스택·명령·규칙은 대상 프로젝트의 `CLAUDE.md`·`AGENTS.md`·`README`에서 읽는다.
 - 스펙의 완료의 정의는 `DoD-N`, 엣지 케이스는 `EC-N` ID를 쓰고, `test-design`의 `@spec` 태그가 이 ID로 연결된다. ID 규칙을 바꾸면 `check-spec.py`, `check-skeleton.py`, `test-design`, 두 테스트 에이전트를 함께 고친다.
 - 파이프라인 단계를 추가·삭제·재배열하면 아래 파일의 "N단계" 참조를 모두 고친다: `dev-pipeline/skills/dev-pipeline/SKILL.md`, `dev-pipeline/skills/dev-pipeline/references/*.md`, `README.md`. 고친 뒤 `grep -rnE "[0-9]단계|[0-9]↔[0-9]" dev-pipeline README.md`로 남은 참조를 확인한다.
+- **계획 파일에 지시서(에이전트용 작업 지시)를 저장하지 않는다.** 계획에는 Task만 두고 스펙은 `연결 항목`(`DoD-N`·`EC-N`)으로 가리킨다. 작업 지시는 `implement`·`test-design`이 위임할 때 조립한다. 용어: 계획 안의 단위는 "Task", 에이전트에 넘기는 조립물은 "작업 지시"다. 계획 형식을 바꾸면 `plan`의 `check-plan.py`, `plan-template.md`, `implement`·`test-design`의 조립 규칙, 에이전트 4개를 함께 고친다.
 - 스킬을 추가하면 `README.md`의 표와 구성 목록에 넣는다.
 - 에이전트의 `../skills/...` 링크는 플러그인 루트(`dev-pipeline/`) 기준 상대경로다. 폴더를 옮기면 함께 고친다.
 
