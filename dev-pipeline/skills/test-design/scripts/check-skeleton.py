@@ -2,6 +2,7 @@
 """테스트 골격이 스펙의 항목(DoD-N, EC-N)을 빠짐없이 잇고 있는지 기계적으로 검사한다. 의존성 없음.
 
 언어와 무관하다. 각 case 직전의 태그 주석(`@spec`, `@given`, `@when`, `@then`)만 읽는다.
+`@then`은 한 case에 여러 줄 올 수 있다(digest에는 입력 순서대로 " ; "로 이은 한 문자열로 반영). 나머지 태그는 한 줄이다.
 의미의 옳고 그름은 검사하지 않는다(그것은 새 reviewer의 일이다).
 
 사용법:
@@ -23,7 +24,7 @@ TAG = re.compile(
     r"^\s*(?:/\*+|\*+/?|//+|#+|\"\"\"|'''|--)?\s*@(spec|given|when|then)\b[ \t]*(.*?)\s*(?:\*/|\"\"\"|''')?\s*$"
 )
 COMMENT_ONLY = re.compile(r"^\s*(?:/\*+|\*+/?|//+|#+|\"\"\"|'''|--)?\s*$")
-COMMENT_LINE = re.compile(r"^\s*(?:/\*|\*|//|#|\"\"\"|'''|--)")
+COMMENT_LINE = re.compile(r"^\s*(?:/\*|\*|//|#(?!\[|!\[)|\"\"\"|'''|--)")  # `#[`·`#![`는 Rust 속성(코드)이다
 # 골격에 있어서는 안 되는 assertion의 흔한 형태(휴리스틱)
 ASSERTION = re.compile(
     r"\b(expect|assert\w*|assertThat|should)\s*[(.]|\.(toBe|toEqual|toHave\w*|toMatch\w*|toContain\w*|toThrow\w*)\b|\bself\.assert\w+"
@@ -57,6 +58,10 @@ def parse(path, errors):
                 blocks.append(cur)
             elif cur is None:
                 errors.append(f"{path}:{n}: `@{tag}`가 `@spec` 블록 밖에 있다")
+            elif tag == "then":
+                # 같은 요청·상태에서 관찰되는 결과는 `@then`을 여러 줄로 쓴다. 입력 순서대로 " ; "로 잇는다.
+                if text:
+                    cur["then"] = cur["then"] + " ; " + text if cur["then"] else text
             elif cur[tag]:
                 errors.append(f"{path}:{n}: `@{tag}`가 한 블록에 두 번 나온다")
             else:
