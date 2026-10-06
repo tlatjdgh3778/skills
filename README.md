@@ -2,15 +2,16 @@
 
 기능 개발 수명주기를 오케스트레이션하는 Claude Code 스킬·에이전트 모음. 요청 접수 → 인터뷰 → 스펙 → 계획 → 테스트 설계(골격 동결) → 멀티 에이전트 구현 → 적대적 검증 → 사용자 검토 → 커밋 → (문제 시) 부검.
 
-스킬과 에이전트는 **프로젝트 지식을 갖지 않는다.** 스택·명령·규칙·커밋 관례는 각 프로젝트의 `CLAUDE.md`(또는 `AGENTS.md`, `README`)와 코드베이스에서 읽는다.
+스킬과 에이전트는 **프로젝트 지식을 갖지 않는다.** 스택·명령·규칙·커밋 관례는 각 프로젝트의 `CLAUDE.md`(또는 `README`)와 코드베이스에서 읽는다.
 
 ## 구성
 
 ```
 .claude-plugin/marketplace.json   마켓플레이스 (seongho, diagram-design)
 dev-pipeline/                     플러그인 seongho
-  skills/   dev-pipeline(오케스트레이터) interview spec plan test-design implement verify
-  agents/   backend-dev frontend-dev test-dev e2e-dev
+  skills/   dev-pipeline(오케스트레이터) interview spec plan test-design implement verify git-commit-rules
+  agents/   backend-dev frontend-dev test-dev e2e-dev test-runner e2e-runner
+  hooks/    hooks.json (SessionStart: 커밋용 세션 ID 준비)
 scripts/validate.sh               릴리스 전 검증
 ```
 
@@ -22,7 +23,8 @@ scripts/validate.sh               릴리스 전 검증
 | `plan` | 스펙을 사이드별 Task로 분화해 계획 파일 하나로 저장한다. Task는 `DoD-N`·`EC-N`으로 스펙을 가리키고 원문을 복사하지 않는다. 항목 coverage를 두고 기계 검사 스크립트로 연결·순환·병렬 파일 충돌·스펙 복사를 확인한다 |
 | `test-design` | 구현 전에 스펙 항목을 테스트 골격(describe/it 서술 + given/when/then 주석)으로 먼저 고정한다. 기계 검사, 새 reviewer의 적대적 검토, mock 경계의 사람 확정을 거쳐 동결한다. 동결된 골자는 스펙이 바뀔 때만 바뀐다 |
 | `implement` | Task를 작업 지시로 조립해 에이전트에 위임·취합하고 Task 상태를 갱신한다 (의존 순서, 병렬, 충돌 확인). 작업 지시는 위임할 때 만들고 저장하지 않는다 |
-| `verify` | 읽기 전용 적대적 검증. 구현을 신뢰하지 않고 깨뜨릴 방법을 먼저 찾는다 |
+| `verify` | 읽기 전용 적대적 스펙 대조. 구현을 신뢰하지 않고 코드와 테스트 assertion에서 깨뜨릴 방법을 먼저 찾는다. 아무것도 실행하지 않고, 테스트 근거(assertion·skip·mock)와 골자 digest를 검사한다 |
+| `git-commit-rules` | 커밋 메시지를 쓰고 스크립트로 현재 세션의 `Session: claude:<id>` 트레일러를 삽입·검증해 커밋한다. 세션 ID가 없으면 커밋을 차단한다. 부검이 커밋에서 세션 기록으로 거슬러 올라가는 데 쓴다 |
 
 | 에이전트 | 역할 |
 |---|---|
@@ -30,8 +32,10 @@ scripts/validate.sh               릴리스 전 검증
 | `frontend-dev` | 작업 지시에 따라 화면 측 코드를 구현한다. 서버 계약은 소비만 한다 |
 | `test-dev` | 단위·통합 테스트 코드를 **작성만** 한다(골격 모드·살 모드). 실행하지 않는다 |
 | `e2e-dev` | E2E 테스트 코드를 **작성만** 한다(골격 모드·살 모드). 실행하지 않는다 |
+| `test-runner` | 단위·통합 테스트와 프로젝트의 정합성 명령을 **실행만** 한다. 도구가 읽기 전용(Read·Grep·Glob·Bash)이고 코드를 고치지 않는다 |
+| `e2e-runner` | 승인된 E2E 시나리오를 실제 화면에서 **실행만** 하고 증거를 보고한다. 프로젝트가 안내한 E2E 명령·브라우저 도구를 쓴다 |
 
-검증(`verify`), 테스트 골격 검토, 부검은 전용 에이전트 없이 새 `general-purpose` 에이전트가 수행한다.
+스펙 대조(`verify`), 테스트 골격 검토, 부검은 전용 에이전트 없이 새 `general-purpose` 에이전트가 수행한다. 검증은 스펙 대조(읽기 전용), 테스트 실행, E2E 실행 세 역할로 나뉘고 오케스트레이터가 항목별로 취합한다.
 
 ## 설치
 
@@ -52,7 +56,7 @@ scripts/validate.sh               릴리스 전 검증
 
 ## 프로젝트가 준비할 것
 
-별도 설정 파일은 없다. 프로젝트의 `CLAUDE.md`(또는 `AGENTS.md`, `README`)에 아래가 있으면 스킬과 에이전트가 읽어 쓴다. 없으면 코드베이스(설정 파일, 기존 코드)에서 확인한다.
+별도 설정 파일은 없다. 프로젝트의 `CLAUDE.md`(또는 `README`)에 아래가 있으면 스킬과 에이전트가 읽어 쓴다. 없으면 코드베이스(설정 파일, 기존 코드)에서 확인한다.
 
 - 빌드·타입 검사·린트·테스트·개발 서버 **명령**
 - 코드 **규칙·관례**와 변경하면 안 되는 곳(생성 파일, 제공된 공통 기반)
@@ -64,20 +68,24 @@ scripts/validate.sh               릴리스 전 검증
 ```
 /seongho:dev-pipeline <구현하려는 기능 한 줄>
 ```
-특정 단계부터 시작하려면 요청에 적는다 (예: "스펙은 있으니 4단계 계획부터"). 각 스킬은 단독 호출도 가능하다 (`/seongho:interview`, `/seongho:spec <기능>`, `/seongho:plan <스펙 경로>`, `/seongho:test-design <계획 파일 경로>`, `/seongho:implement <계획 파일 경로>`, `/seongho:verify <스펙 경로> [계획 파일 경로]`).
+특정 단계부터 시작하려면 요청에 적는다 (예: "스펙은 있으니 4단계 계획부터"). 각 스킬은 단독 호출도 가능하다 (`/seongho:interview`, `/seongho:spec <기능>`, `/seongho:plan <스펙 경로>`, `/seongho:test-design <계획 파일 경로>`, `/seongho:implement <계획 파일 경로>`, `/seongho:verify <스펙 경로> [계획 파일 경로]`, `/seongho:git-commit-rules`).
 
 ## 설계 원칙
 
 - 오케스트레이터는 코드를 쓰지 않는다. 구현·검증은 서브 에이전트가 한다.
-- **코드를 만든 에이전트는 자기 코드를 검증하지 못한다.** 테스트를 만든 에이전트는 그 테스트를 실행하지 않는다. 검증과 실행은 새 `general-purpose` 에이전트가 `verify` 스킬로 읽기 전용으로 한다.
+- **코드를 만든 에이전트는 자기 코드를 검증하지 못한다.** 테스트를 만든 에이전트는 그 테스트를 실행하지 않는다. 스펙 대조는 새 `general-purpose` 에이전트가 `verify` 스킬로 실행 없이 하고, 테스트와 E2E 실행은 `test-runner`·`e2e-runner`가 한다. 코드가 맞아 보이는 것과 실행으로 확인된 것은 구분해 취합한다.
 - 결정은 사람이 한다. 스펙은 결정을 굳힐 뿐 만들지 않는다. 설계 결정은 스펙(계약)과 계획(Task)에서 사용자 승인을 받는다.
 - **테스트는 구현보다 먼저, 골자는 스펙이 바뀔 때만 바뀐다.** 스펙 항목을 골격으로 먼저 동결하고(골자 digest 기록), 검증이 digest로 골대 옮기기를 잡는다. mock 경계는 사람이 정한다.
 - **계획은 스펙을 가리킬 뿐 복사하지 않는다.** 계획에는 Task만 두고(연결 항목 ID, 수정 대상, 완료 조건), 에이전트에게 줄 자기완결적인 작업 지시는 `implement`가 위임할 때 Task와 스펙에서 조립한다. 계획 파일이 커지지 않고, 스펙이 바뀌면 해당 Task만 고친다.
-- 결함은 원 구현 에이전트에게 재위임한다. 같은 결함이 3회 반복되면 루프를 멈추고 사용자와 상의한다.
+- 결함은 원 구현 에이전트에게 재위임한다. 수정은 Task당 합산 3회까지이고, 같은 원인으로 2회 연속 진전이 없으면 루프를 멈추고 사용자와 상의한다.
+- **수정 요청은 영향받는 가장 이른 단계부터 재개한다.** 요구·계약은 2~3단계, 계획은 4단계, 골자는 5단계, 기준을 유지하는 구현 오류만 6단계. 완료된 기능을 고칠 때는 영향받는 Task만 `대기`로 되돌린다.
+- **커밋은 세션으로 추적한다.** 파이프라인 커밋에는 `Session` 트레일러가 붙고, 부검은 이를 통해 당시 판단 근거를 찾는다.
 - 스킬 본문은 얇게, 상세는 `assets/`·`references/`·`scripts/`에 두어 필요할 때만 읽는다.
 - 부검이 스킬·에이전트·프로젝트 지침의 결함을 지목하면 사용자 승인 후 직접 개선한다.
 
 ## 알려진 가정
 
 - 역할 분리(backend / frontend / e2e)는 웹 앱을 가정한다. 다른 형태의 프로젝트는 에이전트를 추가하거나 `CLAUDE.md`에 라우팅 지침을 적는다.
-- 읽기 전용이 요구되는 에이전트(`verify`, 부검)는 `general-purpose`를 쓰므로 도구로 막지 못한다. 지시와 `git status` 확인으로 보장한다.
+- 세션 추적은 플러그인의 `SessionStart` 훅이 `CLAUDE_ENV_FILE`로 세션 ID를 전달한다는 가정에 의존하고 Node.js가 필요하다. 훅이 꺼져 있으면 `git-commit-rules`가 커밋을 차단한다. 일반 `git commit`에는 영향이 없다.
+- `verify`와 부검은 `general-purpose`를 쓰므로 도구로 읽기 전용을 막지 못한다. 지시와 `git status` 확인으로 보장한다. `test-runner`·`e2e-runner`는 쓰기 도구가 없지만 Bash로 파일을 바꿀 수 있어 같은 확인을 한다.
+- `e2e-runner`는 E2E 실행 명령이나 브라우저 도구가 프로젝트 지침에 있다고 가정한다. 없으면 `BLOCKED`로 보고한다.

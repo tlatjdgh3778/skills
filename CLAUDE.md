@@ -19,10 +19,12 @@ scripts/validate.sh                 릴리스 전 검증
 
 - **스킬 간 호출은 Skill 도구로 `seongho:<이름>`을 쓴다.** 본문에 `/spec`처럼 접두사 없는 슬래시 표기를 operative 지시로 쓰지 않는다. 접두사 없는 이름은 다른 스킬과 충돌한다(`verify`가 실제로 그랬다). 사용자에게 안내하는 문구는 `/seongho:verify`처럼 접두사를 붙인다.
 - `disable-model-invocation: true`인 스킬(`dev-pipeline`)은 다른 스킬이 호출할 수 없다. 파이프라인 안에서 호출되는 스킬에는 이 옵션을 붙이지 않는다.
-- **스킬과 에이전트는 프로젝트 지식을 갖지 않는다.** 스택·명령·규칙은 대상 프로젝트의 `CLAUDE.md`·`AGENTS.md`·`README`에서 읽는다.
+- **스킬과 에이전트는 프로젝트 지식을 갖지 않는다.** 스택·명령·규칙은 대상 프로젝트의 `CLAUDE.md`·`README`에서 읽는다.
 - 스펙의 완료의 정의는 `DoD-N`, 엣지 케이스는 `EC-N` ID를 쓰고, `test-design`의 `@spec` 태그가 이 ID로 연결된다. ID 규칙을 바꾸면 `check-spec.py`, `check-skeleton.py`, `test-design`, 두 테스트 에이전트를 함께 고친다.
 - 파이프라인 단계를 추가·삭제·재배열하면 아래 파일의 "N단계" 참조를 모두 고친다: `dev-pipeline/skills/dev-pipeline/SKILL.md`, `dev-pipeline/skills/dev-pipeline/references/*.md`, `README.md`. 고친 뒤 `grep -rnE "[0-9]단계|[0-9]↔[0-9]" dev-pipeline README.md`로 남은 참조를 확인한다.
 - **계획 파일에 지시서(에이전트용 작업 지시)를 저장하지 않는다.** 계획에는 Task만 두고 스펙은 `연결 항목`(`DoD-N`·`EC-N`)으로 가리킨다. 작업 지시는 `implement`·`test-design`이 위임할 때 조립한다. 용어: 계획 안의 단위는 "Task", 에이전트에 넘기는 조립물은 "작업 지시"다. 계획 형식을 바꾸면 `plan`의 `check-plan.py`, `plan-template.md`, `implement`·`test-design`의 조립 규칙, 에이전트 4개를 함께 고친다.
+- **파이프라인 커밋은 `git-commit-rules`의 `session-stamp.mjs`로 한다.** `Session` 트레일러 규칙과 `hooks/hooks.json`의 SessionStart 훅은 한 쌍이다. 한쪽을 바꾸면 다른 쪽과 `commit-and-revert.md`, `dev-pipeline/SKILL.md` 9단계를 함께 고친다.
+- 검증 역할은 `verify`(읽기 전용 대조), `test-runner`, `e2e-runner` 셋으로 나뉜다. 한쪽의 책임을 바꾸면 `verification-loop.md`의 역할표와 취합 규칙, `dev-pipeline/SKILL.md` 7단계, `README.md`를 함께 고친다.
 - 스킬을 추가하면 `README.md`의 표와 구성 목록에 넣는다.
 - 에이전트의 `../skills/...` 링크는 플러그인 루트(`dev-pipeline/`) 기준 상대경로다. 폴더를 옮기면 함께 고친다.
 

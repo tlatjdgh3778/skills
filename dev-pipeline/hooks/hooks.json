@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/skills/git-commit-rules/scripts/session-stamp.mjs\" start claude",
+            "timeout": 15,
+            "statusMessage": "커밋 세션 ID 준비"
+          }
+        ]
+      }
+    ]
+  }
+}

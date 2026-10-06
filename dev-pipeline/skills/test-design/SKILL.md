@@ -66,7 +66,7 @@ python3 <이 스킬 디렉토리>/scripts/check-skeleton.py --spec <스펙> --fi
 
 - 동결 이후 골자(`@spec`·`@given`·`@when`·`@then`)가 바뀌는 조건은 **스펙 변경뿐**이다. 구현 편의로 기대 결과를 완화하는 것은 금지한다.
 - 구현·검증 중 테스트가 틀렸다고 보이면 에이전트가 고치지 않는다. 사람과 합의해 이 스킬을 **update**로 다시 실행한다(스펙 변경이 있으면 `seongho:spec`을 먼저). 단, 선택자·타이밍·데이터 격리 같은 **본문의 결함**은 검증 보고서를 근거로 한 재위임으로 고칠 수 있다.
-- 구현 후 골자가 그대로인지는 `check-skeleton.py --frozen <digest>`로 확인한다. 검증 단계(`seongho:verify`)가 수행한다.
+- 구현 후 골자가 그대로인지는 `check-skeleton.py --frozen <digest>`로 확인한다. 검증 단계(`seongho:verify`)가 읽기 전용으로 수행한다.
 - 스펙이 바뀌면 이전 증거(digest·reviewer PASS)를 재사용하지 않고 2~5단계를 다시 실행한다.
 
 # 상태와 반환

@@ -25,11 +25,10 @@ Task마다 아래 형식으로 조립해 에이전트에게 전달한다. 저장
 - 스펙과 Task에 없는 결정을 추측하지 않는다. 막히면 보고한다.
 
 [보고]
-구현 완료 후 다음만 간결하게 보고한다.
-- 상태: IMPLEMENTED | BLOCKED | NEEDS-DECISION
+구현 완료 후 다음만 간결하게 보고한다. 첫 줄은 반드시 `STATUS: IMPLEMENTED | BLOCKED | NEEDS-DECISION` 형식으로 쓴다.
 - 수정한 파일 목록
 - 연결 항목별 처리: 항목 ID → 구현·테스트 위치(`파일:라인`). 처리하지 못한 항목은 사유
-- Task의 실행 명령과 그 결과
+- Task의 실행 명령과 그 결과(lint·typecheck·관련 테스트별로 통과·실패·미실행)
 - 스펙·Task와 달라진 점 (없으면 "없음")
 - BLOCKED·NEEDS-DECISION이면 근거와 필요한 조치·결정
 ```

@@ -68,7 +68,7 @@ tools: Read, Grep, Glob, Bash, Write, Edit
 아래 항목만 간결하게 반환한다.
 
 - **모드:** 골격 | 살
-- **상태:** `IMPLEMENTED` | `BLOCKED` | `NEEDS-DECISION`
+- **상태:** 보고 첫 줄을 `STATUS: IMPLEMENTED` | `STATUS: BLOCKED` | `STATUS: NEEDS-DECISION` 형식으로 쓴다.
   - `IMPLEMENTED` — 대상 완료 조건마다 시나리오(골격 모드는 골격)를 작성했다. 실행하지 않았으므로 통과를 뜻하지 않는다.
   - `BLOCKED` — 입력 부족, 실행 환경 정보 부재, 범위 밖 수정 필요.
   - `NEEDS-DECISION` — mock 경계·데이터 격리 방법 불명, 스펙 결함, 완료 조건이 사용자 흐름으로 검증 불가능한 형태.
